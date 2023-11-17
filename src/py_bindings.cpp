@@ -28,6 +28,7 @@
 #include "openvino/OpenVINOBindings.hpp"
 #include "log/LogBindings.hpp"
 #include "VersionBindings.hpp"
+#include "depthai_bridge/python/bindings.hpp"
 
 #ifdef DEPTHAI_PYTHON_EMBEDDED_MODULE
 #include <pybind11/embed.h>
@@ -65,6 +66,7 @@ PYBIND11_MODULE(depthai, m)
     callstack.push_front(&DeviceBindings::bind);
     callstack.push_front(&DeviceBootloaderBindings::bind);
     callstack.push_front(&CalibrationHandlerBindings::bind);
+    callstack.push_front(&dai::ros::RosBindings::bind);
     // end of the callstack
     callstack.push_front([](py::module &, void *) {});
 
