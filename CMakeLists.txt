@@ -15,7 +15,7 @@ if(UNIX)
     set(SYS_PATH_SEPARATOR ":")
 endif()
 
-  
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Generate combined Hunter config
 file(READ depthai-core/cmake/Hunter/config.cmake depthai_core_hunter_config)
 file(READ cmake/Hunter/config.cmake hunter_config)
