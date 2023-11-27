@@ -72,6 +72,9 @@ if(DEPTHAI_PYTHON_USE_FIND_PACKAGE)
     find_package(depthai CONFIG REQUIRED)
 else()
     add_subdirectory(depthai-core)
+    set(ENV{PYTHONPATH} "/opt/ros/humble/lib/python3.10/site-packages/:/usr/local/lib/python3.10/dist-packages/:$ENV{PYTHONPATH}") # to see python packages
+    set(DEPTHAI_ROS_PATH "" CACHE STRING "Path to depthai-ros project")
+    add_subdirectory(${DEPTHAI_ROS_PATH} depthai_bridge)
 endif()
 
 # Add pybind11 dependency
@@ -184,24 +187,24 @@ endif()
 target_include_directories(depthai BEFORE PUBLIC "${CMAKE_SYSROOT}/usr/include/python3.8")
 
 # Add stubs (pyi) generation step after building bindings
-execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "from mypy import api" RESULT_VARIABLE error OUTPUT_QUIET ERROR_QUIET)
-if(error)
-    message(WARNING "Mypy not available - stubs won't be generated or checked")
-else()
-    get_target_property(bindings_directory ${TARGET_NAME} LIBRARY_OUTPUT_DIRECTORY)
-    if(NOT bindings_directory)
-        set(bindings_directory ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-    message(STATUS "Mypy available, creating and checking stubs. Running with generate_stubs.py ${TARGET_NAME} ${bindings_directory}")
-    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND
-        ${CMAKE_COMMAND} -E env
-        # Python path (to find compiled module)
-        "PYTHONPATH=$<TARGET_FILE_DIR:${TARGET_NAME}>${SYS_PATH_SEPARATOR}$ENV{PYTHONPATH}"
-        ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_LIST_DIR}/generate_stubs.py" "${TARGET_NAME}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
-        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/generate_stubs.py"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    )
-endif()
+# execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" "from mypy import api" RESULT_VARIABLE error OUTPUT_QUIET ERROR_QUIET)
+# if(error)
+#     message(WARNING "Mypy not available - stubs won't be generated or checked")
+# else()
+#     get_target_property(bindings_directory ${TARGET_NAME} LIBRARY_OUTPUT_DIRECTORY)
+#     if(NOT bindings_directory)
+#         set(bindings_directory ${CMAKE_CURRENT_BINARY_DIR})
+#     endif()
+#     message(STATUS "Mypy available, creating and checking stubs. Running with generate_stubs.py ${TARGET_NAME} ${bindings_directory}")
+#     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND
+#         ${CMAKE_COMMAND} -E env
+#         # Python path (to find compiled module)
+#         "PYTHONPATH=$<TARGET_FILE_DIR:${TARGET_NAME}>${SYS_PATH_SEPARATOR}$ENV{PYTHONPATH}"
+#         ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_LIST_DIR}/generate_stubs.py" "${TARGET_NAME}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+#         DEPENDS "${CMAKE_CURRENT_LIST_DIR}/generate_stubs.py"
+#         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+#     )
+# endif()
 
 # Docstring options
 if(DEPTHAI_PYTHON_DOCSTRINGS_INPUT AND DEPTHAI_PYTHON_DOCSTRINGS_OUTPUT)
@@ -255,10 +258,13 @@ endif()
 # Add include directory
 target_include_directories(${TARGET_NAME} PRIVATE src ${DOCSTRINGS_INCLUDE_PLACEHOLDER_DIR})
 
+set(DAI_ROS_INCLUDE_DIR "${DEPTHAI_ROS_PATH}/include")
+target_include_directories(${TARGET_NAME} PUBLIC src ${DAI_ROS_INCLUDE_DIR})
 # Link with libraries
 target_link_libraries(${TARGET_NAME}
     PUBLIC
         # pybind11
+        depthai_bridge
         pybind11::pybind11
         depthai::core # Use non-opencv target as we use opencv-python in bindings
         hedley
