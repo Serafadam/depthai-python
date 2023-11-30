@@ -181,7 +181,11 @@ class CMakeBuild(build_ext):
 
         # Add additional cmake args from environment
         if 'CMAKE_ARGS' in os.environ:
-            cmake_args += [os.environ['CMAKE_ARGS']]
+            args = os.environ['CMAKE_ARGS']
+            args_split = args.split()
+            for arg in args_split:
+                print(arg)
+                cmake_args += [arg]
 
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)

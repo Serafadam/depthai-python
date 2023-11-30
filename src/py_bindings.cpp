@@ -28,7 +28,7 @@
 #include "openvino/OpenVINOBindings.hpp"
 #include "log/LogBindings.hpp"
 #include "VersionBindings.hpp"
-#include "depthai_bridge/python/bindings.hpp"
+#include "depthai_ros_py_bindings/bindings.hpp"
 
 #ifdef DEPTHAI_PYTHON_EMBEDDED_MODULE
 #include <pybind11/embed.h>

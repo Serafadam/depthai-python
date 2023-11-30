@@ -75,8 +75,8 @@ if(DEPTHAI_PYTHON_USE_FIND_PACKAGE)
 else()
     add_subdirectory(depthai-core)
     set(ENV{PYTHONPATH} "/opt/ros/humble/lib/python3.10/site-packages/:/usr/local/lib/python3.10/dist-packages/:$ENV{PYTHONPATH}") # to see python packages
-    set(DEPTHAI_ROS_PATH "" CACHE STRING "Path to depthai-ros project")
-    add_subdirectory(${DEPTHAI_ROS_PATH} depthai_bridge)
+    set(DAI_ROS_PY_BINDINGS_PATH "" CACHE STRING "Path to depthai-ros-py-bindings project")
+    add_subdirectory(${DAI_ROS_PY_BINDINGS_PATH} depthai_ros_py_bindings)
 endif()
 
 # Add pybind11 dependency
@@ -258,14 +258,15 @@ endif()
 
 # Add include directory
 target_include_directories(${TARGET_NAME} PRIVATE src ${DOCSTRINGS_INCLUDE_PLACEHOLDER_DIR})
-set(DAI_ROS_INCLUDE_DIR "${DEPTHAI_ROS_PATH}/include")
-target_include_directories(${TARGET_NAME} PUBLIC src ${DAI_ROS_INCLUDE_DIR})
+set(DAI_ROS_PY_BINDINGS_PATH_DIR "${DAI_ROS_PY_BINDINGS_PATH}/include")
+target_include_directories(${TARGET_NAME} PUBLIC src ${DAI_ROS_PY_BINDINGS_PATH_DIR})
+
 
 # Link with libraries
 target_link_libraries(${TARGET_NAME}
     PUBLIC
         # pybind11
-        depthai_bridge
+        depthai_ros_py_bindings
         pybind11::pybind11
         depthai::core # Use non-opencv target as we use opencv-python in bindings
         hedley
