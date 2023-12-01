@@ -53,7 +53,6 @@ endif()
 # Add module paths
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/depthai-core/cmake")
-# list(APPEND CMAKE_MODULE_PATH "/workspaces/rae_ws/install/depthai_bridge/share/depthai_bridge/cmake")
 
 # Constants
 set(DOCSTRINGS_INCLUDE_PLACEHOLDER_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/include)
